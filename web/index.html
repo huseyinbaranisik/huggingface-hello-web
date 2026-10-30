@@ -7,58 +7,120 @@
 <!-- Sunucusuz tahmin: model.onnx doğrudan Hugging Face Hub'dan (CORS açık) çekilir,
      onnxruntime-web ile tarayıcıda çalışır. Model reposu: ?repo=kullanici/ad -->
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-  :root { --bg:#f7f7f5; --fg:#1d1d1b; --muted:#6b6b66; --card:#fff; --line:#e2e2dc; --accent:#2f6fde; --ok:#1f8a4c; --bad:#c2410c; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg:#161615; --fg:#ececea; --muted:#9a9a94; --card:#1f1f1d; --line:#33332f; --accent:#6b9cf0; --ok:#4cc27e; --bad:#f08a4b; }
+  :root {
+    --bg:#f6f7fb; --fg:#14151a; --muted:#666a78; --card:#fff; --line:#e4e6ee; --field:#f9fafc;
+    --accent:#ff9d00; --accent2:#ffcc4d; --accent-fg:#1a1200; --ring:rgba(255,157,0,.25);
+    --shadow:0 1px 2px rgba(20,21,26,.04), 0 8px 24px rgba(20,21,26,.06);
   }
-  * { box-sizing: border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui, sans-serif; }
-  main { max-width:720px; margin:0 auto; padding:24px 16px 48px; }
-  h1 { font-size:22px; margin:0 0 4px; }
-  .muted { color:var(--muted); font-size:13px; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; margin-top:16px; }
-  form { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:12px; }
-  label { display:flex; flex-direction:column; gap:4px; font-size:13px; color:var(--muted); }
-  input { font:inherit; color:var(--fg); background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:6px 8px; }
-  button { font:inherit; margin-top:12px; padding:8px 16px; border:0; border-radius:6px; background:var(--accent); color:#fff; cursor:pointer; }
-  button:disabled { opacity:.5; cursor:default; }
-  .bar { display:flex; align-items:center; gap:8px; margin:6px 0; }
-  .bar span:first-child { width:110px; }
-  .track { flex:1; height:10px; background:var(--line); border-radius:5px; overflow:hidden; }
-  .fill { height:100%; background:var(--accent); }
-  pre { margin:0; font-size:12px; white-space:pre-wrap; word-break:break-all; }
-  code { font-size:12px; }
-  a { color:var(--accent); }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0e0f13; --fg:#ecedf2; --muted:#9a9eae; --card:#171920; --line:#272a35; --field:#1d2029;
+      --ring:rgba(255,157,0,.3); --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.55 Manrope, system-ui, sans-serif; -webkit-font-smoothing:antialiased; }
+  body::before { content:""; position:fixed; inset:0 0 auto; height:340px; z-index:-1;
+    background:radial-gradient(600px 240px at 20% 0, var(--ring), transparent 70%),
+               radial-gradient(500px 220px at 85% 10%, rgba(255,204,77,.18), transparent 70%); }
+  main { max-width:1040px; margin:0 auto; padding:40px 16px 56px; }
+
+  header { margin-bottom:28px; }
+  .badge { display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:500; color:var(--muted);
+    background:var(--card); border:1px solid var(--line); border-radius:999px; padding:4px 12px 4px 8px; }
+  h1 { font-size:clamp(26px, 4vw, 36px); line-height:1.15; letter-spacing:-.02em; margin:14px 0 8px; }
+  #aciklama { color:var(--muted); max-width:640px; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .chip { font-size:12.5px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:4px 10px; }
+  .chip b { font-weight:600; }
+
+  .grid { display:grid; grid-template-columns:1.35fr 1fr; gap:20px; align-items:start; }
+  @media (max-width:820px) { .grid { grid-template-columns:1fr; } }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:var(--shadow); }
+  .card h2 { font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:0 0 16px; }
+  .sticky { position:sticky; top:20px; }
+
+  form { display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:14px; }
+  label { display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:500; }
+  input { font:inherit; font-variant-numeric:tabular-nums; color:var(--fg); background:var(--field);
+    border:1px solid var(--line); border-radius:10px; padding:10px 12px; transition:border-color .15s, box-shadow .15s; }
+  input { -moz-appearance:textfield; appearance:textfield; }
+  input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+  input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 4px var(--ring); }
+  button { font:inherit; font-weight:600; width:100%; margin-top:20px; padding:12px 18px; border:0; border-radius:10px;
+    background:linear-gradient(135deg, var(--accent2), var(--accent)); color:var(--accent-fg); cursor:pointer;
+    transition:transform .1s, filter .15s; }
+  button:hover:not(:disabled) { filter:brightness(1.05); }
+  button:active:not(:disabled) { transform:translateY(1px); }
+  button:disabled { opacity:.45; cursor:default; }
+  button:focus-visible { outline:none; box-shadow:0 0 0 4px var(--ring); }
+
+  .bos { color:var(--muted); text-align:center; padding:28px 8px; }
+  .bos .ikon { font-size:32px; display:block; margin-bottom:6px; }
+  .ana { text-align:center; padding:6px 0 18px; border-bottom:1px solid var(--line); margin-bottom:16px; }
+  .ana .yuzde { font-size:52px; font-weight:700; letter-spacing:-.03em; line-height:1; font-variant-numeric:tabular-nums; }
+  .ana .etiket { color:var(--muted); margin-top:6px; }
+  .bar { display:grid; grid-template-columns:110px 1fr 52px; align-items:center; gap:10px; margin:10px 0; font-size:14px; }
+  .bar .deger { text-align:right; font-variant-numeric:tabular-nums; color:var(--muted); }
+  .track { height:10px; background:var(--field); border:1px solid var(--line); border-radius:999px; overflow:hidden; }
+  .fill { height:100%; border-radius:999px; background:var(--muted); opacity:.5; transition:width .5s cubic-bezier(.2,.8,.2,1); }
+  .bar.en .fill { background:linear-gradient(90deg, var(--accent2), var(--accent)); opacity:1; }
+  .bar.en .deger { color:var(--fg); font-weight:600; }
+
+  .uyari { margin-top:16px; font-size:12.5px; color:var(--muted); background:var(--field); border-radius:10px; padding:10px 12px; }
+  details { margin-top:20px; }
+  summary { cursor:pointer; font-size:13px; font-weight:500; color:var(--muted); }
+  details .card { margin-top:10px; padding:16px; }
+  pre, code { font-family:"JetBrains Mono", ui-monospace, monospace; font-size:12px; }
+  pre { margin:8px 0 0; white-space:pre-wrap; word-break:break-all; }
+  code { word-break:break-all; }
+
+  footer { margin-top:28px; font-size:13px; color:var(--muted); max-width:720px; }
+  a { color:inherit; text-decoration-color:var(--accent); text-underline-offset:3px; }
+  a:hover { color:var(--accent); }
 </style>
 </head>
 <body>
 <main>
-  <h1 id="baslik">huggingface hello</h1>
-  <div class="muted" id="aciklama">Model yükleniyor…</div>
+  <header>
+    <span class="badge">🤗 Hugging Face · ONNX · tarayıcıda çalışır</span>
+    <h1 id="baslik">huggingface hello</h1>
+    <div id="aciklama">Model yükleniyor…</div>
+    <div class="chips" id="metrikler"></div>
+  </header>
 
-  <div class="card">
-    <form id="form"></form>
-    <button id="tahmin" disabled>Tahmin et</button>
+  <div class="grid">
+    <section class="card">
+      <h2>Girdiler</h2>
+      <form id="form"></form>
+      <button id="tahmin" disabled>Tahmin et</button>
+    </section>
+
+    <section class="card sticky" aria-live="polite">
+      <h2>Sonuç</h2>
+      <div id="sonuc"><div class="bos"><span class="ikon">🔮</span>Değerleri girip <b>Tahmin et</b>'e basın.</div></div>
+      <div class="uyari">⚠️ Yalnız demo amaçlıdır; klinik karar için kullanılmaz.</div>
+    </section>
   </div>
 
-  <div class="card">
-    <div id="sonuc" class="muted">Sonuç burada görünecek.</div>
-  </div>
+  <details>
+    <summary>Teknik ayrıntılar</summary>
+    <div class="card">
+      Kaynak: <code id="kaynak"></code>
+      <pre id="ham">—</pre>
+    </div>
+  </details>
 
-  <div class="card muted">
-    Kaynak: <code id="kaynak"></code><br>
-    Ham çıktı:
-    <pre id="ham">—</pre>
-  </div>
-
-  <p class="muted">
+  <footer>
     Tahmin bu tarayıcıda yapılır, girdiler hiçbir sunucuya gönderilmez. Model Hugging Face'ten
     (<code>model.onnx</code>) indirilir ve <code>onnxruntime-web</code> ile çalıştırılır.
     Kaynak kod, mobil uygulama ve sunucu (Rails) sürümü:
     <a href="https://github.com/seyyah/huggingface-hello-web">github.com/seyyah/huggingface-hello-web</a>
     · Model: <a id="modelLink" href="https://huggingface.co/5eyyah/hello-diabetes-onnx">Hugging Face</a>
-  </p>
+  </footer>
 </main>
 <script>
 ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/";
@@ -88,8 +150,12 @@ async function yukle() {
     document.getElementById("aciklama").textContent = `✗ Model yüklenemedi (${repo}): ${e.message}`;
     return;
   }
-  document.getElementById("aciklama").textContent =
-    `${config.description} · test AUC ${config.metrics.auc}, accuracy ${config.metrics.accuracy}`;
+  if (config.title) document.getElementById("baslik").textContent = config.title;
+  document.getElementById("aciklama").textContent = config.description;
+  document.getElementById("metrikler").innerHTML =
+    `<span class="chip">AUC <b>${config.metrics.auc}</b></span>` +
+    `<span class="chip">Accuracy <b>${config.metrics.accuracy}</b></span>` +
+    `<span class="chip">Model <b>${repo}</b></span>`;
   document.getElementById("form").innerHTML = config.features.map(o =>
     `<label>${o.label}<input type="number" step="any" name="${o.name}" value="${o.example}" required></label>`).join("");
   document.getElementById("tahmin").disabled = false;
@@ -103,8 +169,11 @@ async function tahmin(e) {
   const cikti = await oturum.run({ input: x });
   const p = Array.from(cikti.probabilities.data);
   const proba = Object.fromEntries(config.classes.map((c, i) => [config.class_labels[c], +p[i].toFixed(4)]));
-  document.getElementById("sonuc").innerHTML = Object.entries(proba).map(([ad, v]) =>
-    `<div class="bar"><span>${ad}</span><div class="track"><div class="fill" style="width:${v * 100}%"></div></div><span>${(v * 100).toFixed(1)}%</span></div>`).join("");
+  const [enAd, enV] = Object.entries(proba).reduce((a, b) => (b[1] > a[1] ? b : a));
+  document.getElementById("sonuc").innerHTML =
+    `<div class="ana"><div class="yuzde">${(enV * 100).toFixed(1)}%</div><div class="etiket">${enAd}</div></div>` +
+    Object.entries(proba).map(([ad, v]) =>
+      `<div class="bar${ad === enAd ? " en" : ""}"><span>${ad}</span><div class="track"><div class="fill" style="width:${v * 100}%"></div></div><span class="deger">${(v * 100).toFixed(1)}%</span></div>`).join("");
   document.getElementById("ham").textContent = JSON.stringify({ repo, input: girdi, proba }, null, 2);
 }
 
