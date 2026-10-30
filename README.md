@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/hero.png" alt="huggingface hello: one model, four runtimes. The reference input gives P(diabetes) = 0.6771 in scikit-learn, ONNX Runtime, the browser, Rails and Android." width="100%">
+  <img src="assets/hero.png" alt="huggingface hello: one model, four runtimes. A screenshot of the live demo page showing 67.7% diabetes var, and a card noting the reference input gives P(diabetes) = 0.6771 in scikit-learn, ONNX Runtime, the browser, Rails and Android." width="100%">
 </p>
 
 <p align="center">
@@ -202,7 +202,7 @@ Wireless adb, reading logs and crash diagnosis: [`docs/ANDROID-DEBUG.md`](docs/A
   seyyah, the original author of the pipeline, the apps and the API.
 - Dataset: Pima Indians Diabetes, National Institute of Diabetes and Digestive and Kidney Diseases
   (NIDDK), via the UCI Machine Learning Repository.
-- Figures set in Playfair Display and IBM Plex, both under the SIL Open Font License
+- Figures set in Space Grotesk and JetBrains Mono, both under the SIL Open Font License
   ([`tools/fonts/`](tools/fonts/)).
 
 ---
@@ -379,5 +379,5 @@ Kablosuz adb, log okuma ve çökme teşhisi: [`docs/ANDROID-DEBUG.md`](docs/ANDR
   fork'udur; boru hattının, uygulamaların ve API'nin asıl yazarı seyyah'tır.
 - Veri seti: Pima Indians Diabetes, National Institute of Diabetes and Digestive and Kidney
   Diseases (NIDDK), UCI Machine Learning Repository üzerinden.
-- Figürlerde Playfair Display ve IBM Plex kullanıldı; ikisi de SIL Open Font License altındadır
+- Figürlerde Space Grotesk ve JetBrains Mono kullanıldı; ikisi de SIL Open Font License altındadır
   ([`tools/fonts/`](tools/fonts/)).
